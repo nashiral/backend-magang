@@ -119,23 +119,23 @@ export async function registerApplicant({ email, password }) {
  */
 export async function loginUser({ email, password }) {
   const user = await User.findOne({ email: email.toLowerCase() });
+
+  console.log("USER:", user);
+
   if (!user) {
-    const err = new Error("Invalid credentials");
-    err.statusCode = 401;
-    throw err;
+    throw new Error("Invalid credentials");
   }
 
+  console.log("INPUT PASSWORD:", password);
+  console.log("HASH:", user.passwordHash);
+
   const ok = await comparePassword(password, user.passwordHash);
+
+  console.log("COMPARE RESULT:", ok);
+
   if (!ok) {
     const err = new Error("Invalid credentials");
     err.statusCode = 401;
-    throw err;
-  }
-
-
-  if (user.role === "APPLICANT" && user.isVerified !== true) {
-    const err = new Error("Email not verified");
-    err.statusCode = 403;
     throw err;
   }
 
